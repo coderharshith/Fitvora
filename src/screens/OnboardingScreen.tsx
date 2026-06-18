@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, ScrollView, TextInput } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, ScrollView, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useDispatch } from 'react-redux';
+import { setUserData } from '../store/userSlice';
 import { Typography } from '../components/Typography';
 import { colors } from '../theme/colors';
 
@@ -26,6 +28,7 @@ const PREFERENCES = [
 ];
 
 export const OnboardingScreen = ({ navigation }: any) => {
+  const dispatch = useDispatch();
   const [step, setStep] = useState(1);
   const [goal, setGoal] = useState('muscle');
   const [activity, setActivity] = useState('moderate');
@@ -124,7 +127,11 @@ export const OnboardingScreen = ({ navigation }: any) => {
         <View style={{width: 40}} />
       </View>
 
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+      <KeyboardAvoidingView 
+        style={{ flex: 1 }} 
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      >
+        <ScrollView contentContainerStyle={styles.scrollContent}>
         {step === 1 && (
           <View>
             <Typography variant="pageHeading" weight="bold" style={styles.title}>What is your main goal?</Typography>
@@ -326,6 +333,7 @@ export const OnboardingScreen = ({ navigation }: any) => {
           </Typography>
         </TouchableOpacity>
       </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };

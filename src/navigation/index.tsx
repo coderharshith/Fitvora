@@ -8,6 +8,7 @@ import { OnboardingScreen } from '../screens/OnboardingScreen';
 import { HomeScreen } from '../screens/HomeScreen';
 import { MenuScreen } from '../screens/MenuScreen';
 import { CartScreen } from '../screens/CartScreen';
+import { ProfileScreen } from '../screens/ProfileScreen';
 import { colors } from '../theme/colors';
 
 const Stack = createNativeStackNavigator();
@@ -81,7 +82,7 @@ function MainTabs({ navigation }: any) {
       />
       <Tab.Screen 
         name="Profile" 
-        component={HomeScreen} // Placeholder for Profile
+        component={ProfileScreen} 
         options={{
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="account-outline" size={28} color={color} />

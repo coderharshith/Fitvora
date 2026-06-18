@@ -2,6 +2,8 @@ import React from 'react';
 import { View, StyleSheet, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useSelector } from 'react-redux';
+import { RootState } from '../store';
 import { Typography } from '../components/Typography';
 import { Card } from '../components/Card';
 import { colors } from '../theme/colors';
@@ -30,10 +32,12 @@ const ProgressRing = ({ label, current, total, unit, size = 64, icon }: any) => 
 };
 
 export const HomeScreen = ({ navigation }: any) => {
+  const userName = useSelector((state: RootState) => state.user.name);
+
   const meals = [
     { name: 'Breakfast', icon: 'weather-sunny', item: 'Oats Bowl', cals: '450 kcal' },
     { name: 'Snack', icon: 'food-apple-outline', item: 'Greek Yogurt', cals: '150 kcal' },
-    { name: 'Lunch', icon: 'silverware-cloche', item: 'Chicken Bowl', cals: '650 kcal' },
+    { name: 'Lunch', icon: 'silverware', item: 'Chicken Bowl', cals: '650 kcal' },
     { name: 'Evening Snack', icon: 'cup-outline', item: 'Protein Shake', cals: '200 kcal' },
     { name: 'Dinner', icon: 'bowl-mix-outline', item: 'Paneer Bowl', cals: '250 kcal' },
   ];
@@ -64,7 +68,7 @@ export const HomeScreen = ({ navigation }: any) => {
         <View style={styles.header}>
           <View>
             <Typography variant="body" weight="bold">Good Morning,</Typography>
-            <Typography variant="largeHeading" weight="bold" style={styles.nameHeading}>Harshith 👋</Typography>
+            <Typography variant="largeHeading" weight="bold" style={styles.nameHeading}>{userName || 'Guest'} 👋</Typography>
             <Typography variant="small" color={colors.textSecondary} style={styles.subtitle}>
               Stay consistent, your future self{'\n'}is watching you.
             </Typography>
