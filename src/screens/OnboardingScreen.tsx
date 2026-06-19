@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, ScrollView, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, ScrollView, TextInput, KeyboardAvoidingView, Platform, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useDispatch } from 'react-redux';
 import { setUserData } from '../store/userSlice';
+import { supabase } from '../supabase';
 import { Typography } from '../components/Typography';
 import { colors } from '../theme/colors';
 
@@ -41,16 +42,49 @@ export const OnboardingScreen = ({ navigation }: any) => {
   const [height, setHeight] = useState('');
   const [weight, setWeight] = useState('');
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (step === 2) {
       if (!name || !age || !height || !weight) {
-        alert("Please fill in all fields to continue.");
+        Alert.alert("Missing Details", "Please fill in all fields to continue.");
         return;
       }
     }
+    
     if (step < 5) {
       setStep(step + 1);
     } else {
+      // Step 5: Save everything
+      const metrics = calculateHealthMetrics();
+      
+      const profileData = {
+        name,
+        age,
+        gender,
+        height,
+        weight,
+        goal,
+        activity,
+        preference,
+        bmi: metrics.bmi,
+        bmr: String(metrics.bmr),
+        tdee: String(metrics.tdee),
+      };
+
+      // Save to Supabase (if logged in)
+      const { data: authData } = await supabase.auth.getUser();
+      if (authData?.user) {
+         const { error } = await supabase.from('profiles').upsert({
+           id: authData.user.id,
+           email: authData.user.email,
+           ...profileData
+         });
+         
+         if (error) console.error("Supabase Save Error:", error);
+      }
+
+      // Save to Redux
+      dispatch(setUserData(profileData));
+
       navigation.replace('MainTabs');
     }
   };
@@ -129,9 +163,9 @@ export const OnboardingScreen = ({ navigation }: any) => {
 
       <KeyboardAvoidingView 
         style={{ flex: 1 }} 
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
-        <ScrollView contentContainerStyle={styles.scrollContent}>
+        <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
         {step === 1 && (
           <View>
             <Typography variant="pageHeading" weight="bold" style={styles.title}>What is your main goal?</Typography>
